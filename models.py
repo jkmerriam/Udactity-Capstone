@@ -2,7 +2,8 @@ import os
 from sqlalchemy import Table, ForeignKey, Column, Integer, Boolean, String, Date, Float, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
-from config.py import database_info
+import crud
+from config import database_info
 
 '''
 Set up the database to be able to Run CRUD on tables
@@ -34,15 +35,6 @@ def db_drop_and_create_all():
     db.create_all()
 
 
-'''
-Performance Association Table
-This table allows for the relationship of many to many for movies and actors
-'''
-
-performance_table = Table('performance', db.Model.metadata,
-        Column('Movie_id', Integer, ForeignKey('movies.id')),
-        Column('Actor_id', Integer, ForeignKey('actors.id')),
-        Column('actor_rating', Integer))
 
 
 '''
@@ -54,14 +46,7 @@ class Movies(db.Model):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    genres = Column(db.ARRAY(String))
     release_date = Column(Date)
-    actors = db.relationship('Actor', secondary=Performance, backref=db.backref('performances'))
-
-    def __init__(self, title, genres, release_date):
-        self.title = title
-        self.genres = genres
-        self.release_date = release_date
 
     def create(self):
         db.session.add(self)
@@ -74,13 +59,31 @@ class Movies(db.Model):
     def update(self):
         db.session.commit()
 
-    def details(self):
+    @property
+    def serialize(self):
         return {
             'id': self.id,
             'title': self.title,
-            'genres': self.genres,
             'release_date': self.release_date
         }
+
+    @property
+    def complete(self):
+        cast = crud.get_actors_in_movie(self.id)
+        return {
+            'id': self.id,
+            'title': self.title,
+            'release_date': self.release_date,
+            'cast': [{
+                'actor_id': performance.actor_id,
+                'actor_name': performance.actor_name,
+            } for performance in cast]
+        }
+
+    def __repr__(self):
+        return '<Movie %r>' % self.title 
+
+
 
 
 '''
@@ -94,15 +97,6 @@ class Actors(db.Model):
     name = Column(String)
     age = Column(Integer)
     gender = Column(String)
-    genres = Column(db.ARRAY(String))
-    seeking_work = Column(Boolean)
-
-    def __init__(self, name, age, gender, genres, seeking_work):
-        self.name = name
-        self.age = age
-        self.gender = gender
-        self.genres = genres
-        self.seeking_work = seeking_work
 
     def create(self):
         db.session.add(self)
@@ -121,12 +115,70 @@ class Actors(db.Model):
             'name': self.name,
             'age': self.age,
             'gender': self.gender,
-            'genres': self.genres,
-            'seeking_work': self.seeking_work
+        }
+
+    @property
+    def complete(self):
+        past_performances = crud.get_past_actor_performance(self.id)
+        upcoming_performances = crud.get_upcoming_actor_performances(self.id)
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender,
+            'past_performances':[{
+                'movie_id': performance.movie.id,
+                'movie_name': performance.movie.title,
+                'release_date': performance.movie.release_date
+            } for performance in past_performances],
+            'upcoming_performances': [{
+                'movie_id': performance.movie.id,
+                'movie_name': performance.movie.title,
+                'release_date': performance.movie.release_date
+            } for performance in upcoming_performances],
+            'past_performance_total': len(past_performances),
+            'upcoming_performance_total': len(upcoming_performances)
         }
 
 
+    def __repr__(self):
+        return '<Artist %r>' % self.name
 
 
+'''
+Performance Table
+This table allows for the relationship of many to many for movies and actors
+'''
 
+class Performance(db.Model):
+    __tablename__ = 'performance'
+
+    id = Column(Integer, primary_key=True)
+    rating = Column(Integer)
+    movie_id = Column(Integer, ForeignKey('Movie.id'), nullable=False)
+    movie = db.relationship('Movie', backref=db.backref('movies', cascade="all,delete"))
+    actor_id = Column(Integer, ForeignKey('Artist.id'), nullable=False)
+    actor = db.relationship('Actor', backref=db.backref('actors', cascade="all, delete"))
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'rating': self.rating,
+            'movie_id': self.movie_id,
+            'actor_id': self.actor_id
+        }
+
+    @property
+    def performance(self):
+        return {
+            'actor_id': self.Actor.id,
+            'actor_name': self.Actor.name,
+            'movie_title': self.Movie.title,
+            'rating': self.rating
+            }
 

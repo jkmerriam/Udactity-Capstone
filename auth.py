@@ -8,7 +8,7 @@ import json
 
 AUTH0_DOMAIN = 'jamie-merriam.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'castingagency'
+API_AUDIENCE = 'casting_agency'
 
 # AuthError Exception
 '''

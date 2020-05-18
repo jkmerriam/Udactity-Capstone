@@ -2,14 +2,14 @@ import os
 from sqlalchemy import Table, ForeignKey, Column, Integer, Boolean, String, Date, Float, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
-import crud
+from datetime import date
 from config import database_info
 
 '''
 Set up the database to be able to Run CRUD on tables
 '''
 
-database_path = os.environ.get('DATABASE_URL', "postgres://{}:{}@{}:{}/{}".format(database_info["db_user"], database_info["db_password"], database_info["db_location"], database_info["db_port"], database_info["db_name"]))
+# database_path = os.environ.get('DATABASE_URL', "postgres://{}:{}@{}:{}/{}".format(database_info["db_user"], database_info["db_password"], database_info["db_location"], database_info["db_port"], database_info["db_name"]))
 
 db = SQLAlchemy()
 
@@ -17,8 +17,8 @@ db = SQLAlchemy()
 setup_db(app, database_path=database_path)
 binds a flask application to a SQLAlchemy service
 '''
-def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+def setup_db(app):
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres://jamesmerriam@localhost:5432/casting_agency'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
@@ -33,13 +33,26 @@ can be used to initialize a clean database
 def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
+    db_init_values()
+'''
+Initialize the database with values'
+'''
+def db_init_values():
+    new_movie = (Movies(title='Curious Class of FSND', release_date=date.today()))
+    new_actor = (Actors(name='Jamie Merriam', gender="Male", age=26))
+    new_performance = (Performance(rating=95, movie_id=new_movie.id, movie=new_movie, actor_id=new_actor.id, actor=new_actor))
 
+    new_movie.create()
+    new_actor.create()
+    new_performance.create()
+    db.session.commit()
 
 
 
 '''
 Movies Class creates the table for Movies with a foreign key relationship to actors
 '''
+
 
 class Movies(db.Model):
     __tablename__ = 'movies'
@@ -64,28 +77,11 @@ class Movies(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'release_date': self.release_date
-        }
-
-    @property
-    def complete(self):
-        cast = crud.get_actors_in_movie(self.id)
-        return {
-            'id': self.id,
-            'title': self.title,
             'release_date': self.release_date,
-            'cast': [{
-                'actor_id': performance.actor_id,
-                'actor_name': performance.actor_name,
-            } for performance in cast]
         }
 
     def __repr__(self):
-        return '<Movie %r>' % self.title 
-
-
-
-
+        return '<Movie %r>' % self.title
 '''
 Actors Class creates the table for Actors to be tracked in the DB
 '''
@@ -109,35 +105,13 @@ class Actors(db.Model):
     def update(self):
         db.session.commit()
 
-    def details(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'age': self.age,
-            'gender': self.gender,
-        }
-
     @property
-    def complete(self):
-        past_performances = crud.get_past_actor_performance(self.id)
-        upcoming_performances = crud.get_upcoming_actor_performances(self.id)
+    def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
             'age': self.age,
-            'gender': self.gender,
-            'past_performances':[{
-                'movie_id': performance.movie.id,
-                'movie_name': performance.movie.title,
-                'release_date': performance.movie.release_date
-            } for performance in past_performances],
-            'upcoming_performances': [{
-                'movie_id': performance.movie.id,
-                'movie_name': performance.movie.title,
-                'release_date': performance.movie.release_date
-            } for performance in upcoming_performances],
-            'past_performance_total': len(past_performances),
-            'upcoming_performance_total': len(upcoming_performances)
+            'gender': self.gender
         }
 
 
@@ -155,10 +129,10 @@ class Performance(db.Model):
 
     id = Column(Integer, primary_key=True)
     rating = Column(Integer)
-    movie_id = Column(Integer, ForeignKey('Movie.id'), nullable=False)
-    movie = db.relationship('Movie', backref=db.backref('movies', cascade="all,delete"))
-    actor_id = Column(Integer, ForeignKey('Artist.id'), nullable=False)
-    actor = db.relationship('Actor', backref=db.backref('actors', cascade="all, delete"))
+    movie_id = Column(Integer, ForeignKey('movies.id'), nullable=False)
+    movie = db.relationship('Movies', backref=db.backref('movies', cascade="all,delete"))
+    actor_id = Column(Integer, ForeignKey('actors.id'), nullable=False)
+    actor = db.relationship('Actors', backref=db.backref('actors', cascade="all, delete"))
 
     def create(self):
         db.session.add(self)

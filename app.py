@@ -34,7 +34,7 @@ def create_app(test_config=None):
     -------------------------------------------------------------------------------
     '''
     @app.route('/', methods=['GET'])
-    def home(jwt):
+    def home():
         return jsonify({
             'success': True,
             'message': 'Welcome to your first Heroku App'

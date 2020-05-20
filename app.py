@@ -33,6 +33,12 @@ def create_app(test_config=None):
     API ENDPOINTS
     -------------------------------------------------------------------------------
     '''
+    @app.route('/', methods=['GET'])
+    def home(jwt):
+        return jsonify({
+            'success': True,
+            'message': 'Welcome to your first Heroku App'
+        })
 
     '''
     GET /actors

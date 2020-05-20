@@ -75,7 +75,8 @@ Queries the Database for all Actors
     - Success: Boolean
 
 Example Response
-  {
+```  
+{
     "actors": [
         {
             "age": 33,
@@ -86,15 +87,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to GET /actors/ will result in the following error
-    {
+```   
+ {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+```
 ### 2. POST /actors
 Insert new Actor in to the Database
   * Require permission: 'post:actors'
@@ -112,6 +114,7 @@ Insert new Actor in to the Database
     - Success: Boolean
 
 Example Response
+```
 {
     "actor": [
         {
@@ -123,15 +126,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to POST /actors with incomplete information will result in the following error
-    {
+```   
+ {
       "error": 422,
       "message": "unprocessable",
       "success": false
     }
-
+```
 ### 3. PATCH /actors
 Update Actor in the Database
   * Require permission: 'patch:actors'
@@ -151,6 +155,7 @@ Update Actor in the Database
     - Success: Boolean
 
 Example Response
+```
 {
     "actor": [
         {
@@ -162,15 +167,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to PATCH /actors/'id' with invalid id will result in the following error
-    {
+```   
+ {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+```
 ### 4. DELETE /actors
 Delete Actor in the Database
   * Require permission: 'delete:actors'
@@ -181,19 +187,21 @@ Delete Actor in the Database
     * Success: Boolean
 
 Example Response
+```
 {
     "delete": "3",
     "success": true
 }
-
+```
 Errors
   * Attempting to DELETE /actors/'id' with invalid id will result in the following error
-    {
+```   
+ {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+```
 
 ### 5. GET /movies
 Queries the Database for all Movies
@@ -206,6 +214,7 @@ Queries the Database for all Movies
     - Success: Boolean
 
 Example Response
+```
 {
     "movies": [
         {
@@ -216,15 +225,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to GET /movies/ will result in the following error
-    {
+```   
+ {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+```
 ### 6. POST /movies
 Insert new Movie in to the Database
   * Require permission: 'post:movies'
@@ -240,6 +250,7 @@ Insert new Movie in to the Database
     - Success: Boolean
 
 Example Response
+```
 {
     "movies": [
         {
@@ -250,15 +261,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to POST /movies with incomplete information will result in the following error
-    {
+```
+ {
       "error": 422,
       "message": "unprocessable",
       "success": false
     }
-
+```
 ### 7. PATCH /movies
 Update Movie in the Database
   * Require permission: 'patch:movies'
@@ -276,6 +288,7 @@ Update Movie in the Database
     - Success: Boolean
 
 Example Response
+```
 {
     "movies": [
         {
@@ -286,15 +299,16 @@ Example Response
     ],
     "success": true
 }
-
+```
 Errors
   * Attempting to PATCH /movies/'id' with invalid id will result in the following error
+  ```   
     {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+  ```
 ### 8. DELETE /movies
 Delete Movie in the Database
   * Require permission: 'delete:movies'
@@ -305,16 +319,18 @@ Delete Movie in the Database
     * Success: Boolean
 
 Example Response
+```
 {
     "delete": "3",
     "success": true
 }
-
+```
 Errors
   * Attempting to DELETE /movies/'id' with invalid id will result in the following error
+  ```
     {
       "error": 404,
       "message": "resource not found",
       "success": false
     }
-
+```

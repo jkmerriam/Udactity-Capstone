@@ -60,6 +60,9 @@ To start the server locally following the instructions below:
     ```
 
 ## API Documentation
+
+### The Heroku app is currently Running at https://jkmerriam-casting-agency.herokuapp.com
+
 ### 1. GET /actors
 Queries the Database for all Actors
   * Require permission: 'get:actors'

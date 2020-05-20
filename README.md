@@ -1,13 +1,317 @@
 # Udactity-Capstone
 Udacity Nano Degree Capston Casting Agency
 
+## Motivation
+The motivation for this project was to demonstrate my ability to build a Full Stack Web Application with the knowledge gained during the course. This final project encompasses the following technical topics:
+  1. Database Modeling(PostgreSQL and SQLAlchemy)
+  2. API to perform CRUD operations on the Database using Flask
+  3. Authorization of the API endpoints as well as RBAC and Authentication with Auth0
+  4. Automated Testing
+  5. Deployment to Heroku
 
-Casting Assistant: {Authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlF6RTJORE0zTWpBMk1VTkNORVUwUXpCRE5rTkZPRFpCT0VReVJFWkZNalU0TlRBME5UazFOdyJ9.eyJpc3MiOiJodHRwczovL2phbWllLW1lcnJpYW0uYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVlNWFjZjE3MzQ5NjNjMGQ0Nzg2NjljYiIsImF1ZCI6WyJjYXN0aW5nX2FnZW5jeSIsImh0dHBzOi8vamFtaWUtbWVycmlhbS5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNTg5NzQ0ODA3LCJleHAiOjE1ODk4MzEyMDcsImF6cCI6ImZ2eG1ETzM1NGNsYW94TDJuWDZMZ3M3ekJMTHE5eTNCIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbImdldDphY3RvcnMiLCJnZXQ6bW92aWVzIl19.rUN_10_W4pEb4Rfz6bgDza9g5B5Fvsfxu14Vn1RVvh7RfY-qgeJBbnSVo8ttMU3IvAE6mj8GUrxCmp0PwXssy3CDdzQlKYcWmYds4bUz7X8sDj7qKSuig3RSHfFLgjt4TzW6r8ToxbI9w_Ru5yhvzfi7z3lJC0lGay4SYLxq2zTPZhMOlgLaOvaWeOWl_jL4FN4Xf70k_k54Mugrwab2MONaOiFonZYKM3ovhfP07CXfM3pKmJk8DEgkSjz51rOEdSS6yhlNqiKb1PES57pJjFG9lWzKeg3VN7WJVID9OVlY3pTTe594Tk-i0ZenXeciDrKczjioCul3F6024RnGWg'}
+##Running Locally
+In order to run the application you must be in the same directory as app.py. Python3 and Postgres are required to run this project.
+
+###Set Up environment
+To start the server locally following the instructions below:
+
+  1. Create and Activate Virtual Environment:
+    ```
+    virtualenv --no-site-packages casting_agency
+    souce casting_agency/bin/activate
+    ```
+
+  2. Install the Dependencies:
+    ```
+    pip install -r requirements.txt
+    ```
+
+  3. Setup Database(only necessary to run locally):
+    * Access config.py and edit the following dictionary
+      ```
+      database_info = {
+       "db_name" : "db_name",
+       "db_user" : "use_name", # default postgres user name
+       "db_password" : None, # if applicable. If no password, just type in None
+       "db_location": "localhost:5432",
+      }
+      ```
+
+  4. Setup Auth0:
+    * Note: For those reviewing the project, there are tokens below to assist in testing the API
+    * To set up Auth0 for your own app edit the following dict
+      ```
+      auth0_info={
+        "AUTH0_DOMAIN" : "jamie-merriam.auth0.com",
+        "ALGORITHMS" : ["RS256"],
+        "API_AUDIENCE": "casting_agency"
+      }
+      ```
+
+  5. Start the Server:
+    ```
+    export FLASK_APP=app.py
+    flask run
+    ```
+
+  6. Run Tests:
+    ```
+    python test_agency.py
+    ```
+
+##API Documentation
+###1. GET /actors
+Queries the Database for all Actors
+  * Require permission: 'get:actors'
+  * Returns:
+    - List of actors in dict form with fields:
+      * Id: Integer
+      * Name: String
+      * Age: Integer
+      * Gender: String
+    - Success: Boolean
+
+Example Response
+  {
+    "actors": [
+        {
+            "age": 33,
+            "gender": "Male",
+            "id": 1,
+            "name": "Udacity"
+        }
+    ],
+    "success": true
+}
+
+Errors
+  * Attempting to GET /actors/ will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
+
+###2. POST /actors
+Insert new Actor in to the Database
+  * Require permission: 'post:actors'
+  * Request Header:
+    - Application/JSON
+      * Name: String
+      * Age: Integer
+      * Gender: String
+  * Returns:
+    - Actor in dict form with fields:
+      * Id: Integer
+      * Name: String
+      * Age: Integer
+      * Gender: String
+    - Success: Boolean
+
+Example Response
+{
+    "actor": [
+        {
+            "age": 22,
+            "gender": "Male",
+            "id": 3,
+            "name": "Curious Case of FSND"
+        }
+    ],
+    "success": true
+}
+
+Errors
+  * Attempting to POST /actors with incomplete information will result in the following error
+    {
+      "error": 422,
+      "message": "unprocessable",
+      "success": false
+    }
+
+###3. PATCH /actors
+Update Actor in the Database
+  * Require permission: 'patch:actors'
+  * Requires Request Arguments:
+    - Actor ID: Integer
+  * Requires Data to Update Request Header:
+    - Application/JSON
+      * Name: String
+      * Age: Integer
+      * Gender: String
+  * Returns:
+    - Actor in dict form with fields:
+      * Id: Integer
+      * Name: String
+      * Age: Integer
+      * Gender: String
+    - Success: Boolean
+
+Example Response
+{
+    "actor": [
+        {
+            "age": 22,
+            "gender": "Male",
+            "id": 3,
+            "name": "Curious Case of FSND"
+        }
+    ],
+    "success": true
+}
+
+Errors
+  * Attempting to PATCH /actors/'id' with invalid id will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
+
+###4. DELETE /actors
+Delete Actor in the Database
+  * Require permission: 'delete:actors'
+  * Requires Request Arguments:
+    - Actor ID: Integer
+  * Returns:
+    * Id: Integer
+    * Success: Boolean
+
+Example Response
+{
+    "delete": "3",
+    "success": true
+}
+
+Errors
+  * Attempting to DELETE /actors/'id' with invalid id will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
 
 
+###5. GET /movies
+Queries the Database for all Movies
+  * Require permission: 'get:movies'
+  * Returns:
+    - List of movies in dict form with fields:
+      * Id: Integer
+      * Title: String
+      * Release_date: Date
+    - Success: Boolean
 
-Casting Director: {Authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlF6RTJORE0zTWpBMk1VTkNORVUwUXpCRE5rTkZPRFpCT0VReVJFWkZNalU0TlRBME5UazFOdyJ9.eyJpc3MiOiJodHRwczovL2phbWllLW1lcnJpYW0uYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVlNWFjZWU1ODgxMTU4MGQ1NzU5MGU4ZiIsImF1ZCI6WyJjYXN0aW5nX2FnZW5jeSIsImh0dHBzOi8vamFtaWUtbWVycmlhbS5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNTg5NzQ0NzU2LCJleHAiOjE1ODk4MzExNTYsImF6cCI6ImZ2eG1ETzM1NGNsYW94TDJuWDZMZ3M3ekJMTHE5eTNCIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTphY3RvcnMiLCJnZXQ6YWN0b3JzIiwiZ2V0Om1vdmllcyIsInBhdGNoOmFjdG9ycyIsInBhdGNoOm1vdmllcyIsInBvc3Q6YWN0b3JzIl19.EfcVdAP3C-yJy712xLXZ-t7WOsYZoAzIpkAj3C95n9uJP-wvAqijgKt01Vmptyrol_93krh_ztAwBB11IrCfjKtUDD7Wan7B1gmZnsDSCpaQEv9GY3zFUpBrbg0Q20MtZvsdal7BtJkq12228oyGVdnjtDnIFCg3NzxxJ5WVQiejb3IrZejJfWalKSon3gqAjU_rkcGaFQkilimJJiUC393fd3YEVDCrRasLOfGcnLx03GT3scbTGGaYj4VLdY1kCF428aisWxe6Id3oHLBm6bSuaWckUq_p-UJAUCR_egzcy6Q_YBPG9rOfZeBkYuWN0yFA1T0e2q1DMvsmsFsb2g'}
+Example Response
+{
+    "movies": [
+        {
+            "id": 1,
+            "release_date": "Tue, 19 May 2020 00:00:00 GMT",
+            "title": "Curious Case of FSND"
+        }
+    ],
+    "success": true
+}
 
+Errors
+  * Attempting to GET /movies/ will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
 
-ED:{
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlF6RTJORE0zTWpBMk1VTkNORVUwUXpCRE5rTkZPRFpCT0VReVJFWkZNalU0TlRBME5UazFOdyJ9.eyJpc3MiOiJodHRwczovL2phbWllLW1lcnJpYW0uYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVlOWQwMzkzNDlmYjI0MGM4YTI2NjA4MyIsImF1ZCI6WyJjYXN0aW5nX2FnZW5jeSIsImh0dHBzOi8vamFtaWUtbWVycmlhbS5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNTg5ODAyMzk1LCJleHAiOjE1ODk4ODg3OTUsImF6cCI6ImZ2eG1ETzM1NGNsYW94TDJuWDZMZ3M3ekJMTHE5eTNCIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTphY3RvcnMiLCJkZWxldGU6bW92aWVzIiwiZ2V0OmFjdG9ycyIsImdldDptb3ZpZXMiLCJwYXRjaDphY3RvcnMiLCJwYXRjaDptb3ZpZXMiLCJwb3N0OmFjdG9ycyIsInBvc3Q6bW92aWVzIl19.kiOMVuPWcA-XUZC7haL5Rys780QV9trV0dfVvT6fJHZj3KEiMFod-SmjKJhdjVfsWur3galkxYJNV7oMiDinBd8QuJvPEqC7TvnWzqWaerZ72ZnhUywTcHIocosjYkRNlfUkzXLU9Mf1PtfHFF2h2F7Epbm_myYCnZl9F547moT_OSFjHgKDpDGjUyKd6CdG-RqtjcsGxYqpH6EOb3QJfrcF13heBWLWpfOCXUJGcWw3vkelpWdT4AJeRH6JZXFICWwvYtAIMpVY0ATYJ5TAThhinkga_vxhDcQjrz1e7RTSrtZCltsAF1ycHbPh5KwlE4fTRuJKAVINvFBuTu-Ljw}
+###6. POST /movies
+Insert new Movie in to the Database
+  * Require permission: 'post:movies'
+  * Request Header:
+    - Application/JSON
+      * Title: String
+      * Release_date: Date
+  * Returns:
+    - Movie in dict form with fields:
+      * Id: Integer
+      * Title: String
+      * Release_date: Date
+    - Success: Boolean
+
+Example Response
+{
+    "movies": [
+        {
+            "id": 1,
+            "release_date": "Tue, 19 May 2020 00:00:00 GMT",
+            "title": "Curious Case of FSND"
+        }
+    ],
+    "success": true
+}
+
+Errors
+  * Attempting to POST /movies with incomplete information will result in the following error
+    {
+      "error": 422,
+      "message": "unprocessable",
+      "success": false
+    }
+
+###7. PATCH /movies
+Update Movie in the Database
+  * Require permission: 'patch:movies'
+  * Requires Request Arguments:
+    - Movie ID: Integer
+  * Requires Data to Update Request Header:
+    - Application/JSON
+      * Title: String
+      * Release_date: Date
+  * Returns:
+    - Movie in dict form with fields:
+      * Id: Integer
+      * Title: String
+      * Release_date: Date
+    - Success: Boolean
+
+Example Response
+{
+    "movies": [
+        {
+            "id": 1,
+            "release_date": "Tue, 19 May 2020 00:00:00 GMT",
+            "title": "Curious Case of FSND"
+        }
+    ],
+    "success": true
+}
+
+Errors
+  * Attempting to PATCH /movies/'id' with invalid id will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
+
+###8. DELETE /movies
+Delete Movie in the Database
+  * Require permission: 'delete:movies'
+  * Requires Request Arguments:
+    - Movie ID: Integer
+  * Returns:
+    * Id: Integer
+    * Success: Boolean
+
+Example Response
+{
+    "delete": "3",
+    "success": true
+}
+
+Errors
+  * Attempting to DELETE /movies/'id' with invalid id will result in the following error
+    {
+      "error": 404,
+      "message": "resource not found",
+      "success": false
+    }
+

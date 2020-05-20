@@ -142,9 +142,7 @@ def create_app(test_config=None):
     @app.route('/actors/<id>', methods=['DELETE'])
     @requires_auth('delete:actors')
     def delete_actor(jwt, id):
-        print(id)
         actor=Actors.query.get(id)
-        print(actor)
 
         if actor:
             try:
@@ -192,22 +190,22 @@ def create_app(test_config=None):
     def new_movie(jwt):
         body = request.get_json(force=True)
 
-        # if not('title' in body and 'release_date' in body):
-        #     abort(422)
+        if not('title' in body and 'release_date' in body):
+            abort(422)
         title = body.get('title')
         release_date = body.get('release_date')
 
-        # try:
-        movie = Movies(title=title, release_date=release_date)
-        movie.create()
+        try:
+            movie = Movies(title=title, release_date=release_date)
+            movie.create()
 
-        return jsonify({
-            'success':True,
-            'movies':[movie.serialize]
-        })
+            return jsonify({
+                'success':True,
+                'movies':[movie.serialize]
+            })
 
-        # except:
-        #     abort(422)
+        except:
+            abort(422)
 
     '''
     PATCH /movies/<id>
@@ -303,7 +301,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": ex.status_code,
-            'message': ex.error
+            'message': ex.error['description']
         }), 401
 
     return app

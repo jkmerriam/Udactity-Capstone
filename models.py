@@ -9,7 +9,7 @@ from config import database_info
 Set up the database to be able to Run CRUD on tables
 '''
 
-# database_path = os.environ.get('DATABASE_URL', "postgres://{}:{}@{}:{}/{}".format(database_info["db_user"], database_info["db_password"], database_info["db_location"], database_info["db_port"], database_info["db_name"]))
+database_path = os.environ.get('DATABASE_URL', "postgres://{}:{}@{}/{}".format(database_info["db_user"], database_info["db_password"], database_info["db_location"], database_info["db_name"]))
 
 db = SQLAlchemy()
 
@@ -17,8 +17,8 @@ db = SQLAlchemy()
 setup_db(app, database_path=database_path)
 binds a flask application to a SQLAlchemy service
 '''
-def setup_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres://jamesmerriam@localhost:5432/casting_agency'
+def setup_db(app, database_path=database_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)

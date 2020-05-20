@@ -18,7 +18,7 @@ To start the server locally following the instructions below:
   1. Create and Activate Virtual Environment:
     ```
     virtualenv --no-site-packages casting_agency
-    souce casting_agency/bin/activate
+    source casting_agency/bin/activate
     ```
 
   2. Install the Dependencies:

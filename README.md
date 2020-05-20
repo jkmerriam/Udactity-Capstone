@@ -9,10 +9,10 @@ The motivation for this project was to demonstrate my ability to build a Full St
   4. Automated Testing
   5. Deployment to Heroku
 
-##Running Locally
+## Running Locally
 In order to run the application you must be in the same directory as app.py. Python3 and Postgres are required to run this project.
 
-###Set Up environment
+### Set Up environment
 To start the server locally following the instructions below:
 
   1. Create and Activate Virtual Environment:
@@ -38,7 +38,7 @@ To start the server locally following the instructions below:
       ```
 
   4. Setup Auth0:
-    * Note: For those reviewing the project, there are tokens below to assist in testing the API
+    * Note: For those reviewing the project, there are tokens in config.py to test API
     * To set up Auth0 for your own app edit the following dict
       ```
       auth0_info={
@@ -59,8 +59,8 @@ To start the server locally following the instructions below:
     python test_agency.py
     ```
 
-##API Documentation
-###1. GET /actors
+## API Documentation
+### 1. GET /actors
 Queries the Database for all Actors
   * Require permission: 'get:actors'
   * Returns:
@@ -92,7 +92,7 @@ Errors
       "success": false
     }
 
-###2. POST /actors
+### 2. POST /actors
 Insert new Actor in to the Database
   * Require permission: 'post:actors'
   * Request Header:
@@ -129,7 +129,7 @@ Errors
       "success": false
     }
 
-###3. PATCH /actors
+### 3. PATCH /actors
 Update Actor in the Database
   * Require permission: 'patch:actors'
   * Requires Request Arguments:
@@ -168,7 +168,7 @@ Errors
       "success": false
     }
 
-###4. DELETE /actors
+### 4. DELETE /actors
 Delete Actor in the Database
   * Require permission: 'delete:actors'
   * Requires Request Arguments:
@@ -192,7 +192,7 @@ Errors
     }
 
 
-###5. GET /movies
+### 5. GET /movies
 Queries the Database for all Movies
   * Require permission: 'get:movies'
   * Returns:
@@ -222,7 +222,7 @@ Errors
       "success": false
     }
 
-###6. POST /movies
+### 6. POST /movies
 Insert new Movie in to the Database
   * Require permission: 'post:movies'
   * Request Header:
@@ -256,7 +256,7 @@ Errors
       "success": false
     }
 
-###7. PATCH /movies
+### 7. PATCH /movies
 Update Movie in the Database
   * Require permission: 'patch:movies'
   * Requires Request Arguments:
@@ -292,7 +292,7 @@ Errors
       "success": false
     }
 
-###8. DELETE /movies
+### 8. DELETE /movies
 Delete Movie in the Database
   * Require permission: 'delete:movies'
   * Requires Request Arguments:

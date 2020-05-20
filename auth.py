@@ -3,12 +3,12 @@ from flask import request, _request_ctx_stack, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
-import json
+from config import auth0_info
 
 
-AUTH0_DOMAIN = 'jamie-merriam.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'casting_agency'
+AUTH0_DOMAIN = auth0_info['AUTH0_DOMAIN']
+ALGORITHMS = auth0_info['ALGORITHMS']
+API_AUDIENCE = auth0_info['API_AUDIENCE']
 
 # AuthError Exception
 '''
